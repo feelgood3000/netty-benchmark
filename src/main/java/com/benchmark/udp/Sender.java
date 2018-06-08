@@ -25,14 +25,14 @@ public class Sender {
     private static  Bootstrap bootstrap;
     private static Channel channel;
 
-    static CountDownLatch countDownLatch=new CountDownLatch(5);
+    static CountDownLatch countDownLatch;
 
-    public Sender(InetSocketAddress address) throws InterruptedException {
+    public Sender() throws InterruptedException {
 
     }
 
-    public static void send(String remoteIp,int port) throws InterruptedException {
-        byte[] data=new byte[50];
+    public static void send(String remoteIp,int port,int packageSize) throws InterruptedException {
+        byte[] data=new byte[packageSize];
         byte[] dataObj=KryoSerializer.encode(new UdpRequest(System.currentTimeMillis(),data));
         ByteBuf buffer=channel.alloc().heapBuffer();
         buffer.writeBytes(dataObj);
@@ -45,12 +45,22 @@ public class Sender {
         group.shutdownGracefully();
     }
 
+    private static Executor executor=null;
+
+
     public static void main(String[] args){
-        if (args.length!=2){
-            System.out.println("args error usage: ip port");
+        if (args.length!=5){
+            System.out.println("args error usage: ip port threadNum packagePerThread packageSize");
             System.exit(1);
         }
-        InetSocketAddress address=new InetSocketAddress(args[0],Integer.parseInt(args[1]));
+        final String ip=args[0];
+        final int port=NumberUtils.toInt(args[1]);
+        final int threadNum=NumberUtils.toInt(args[2]);
+        final int packagePerThread=NumberUtils.toInt(args[3]);
+        final int packageSize=NumberUtils.toInt(args[4]);
+
+        countDownLatch=new CountDownLatch(threadNum);
+
         group=new NioEventLoopGroup();
         bootstrap=new Bootstrap();
         bootstrap.group(group).channel(NioDatagramChannel.class)
@@ -58,19 +68,33 @@ public class Sender {
                 .handler(new RevieveHandler());
         try {
             channel=bootstrap.bind(0).sync().channel();
-            for (int i = 0; i < 100; i++) {
-                Sender.send(args[0],NumberUtils.toInt(args[1]));
-            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }finally {
-            Sender.stop();
+//            Sender.stop();
         }
 
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        executor=Executors.newFixedThreadPool(threadNum);
+        for (int i = 0; i < threadNum; i++) {
+            executor.execute(new Runnable() {
+                public void run() {
+                    try {
+                        countDownLatch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    for (int i = 0; i < packagePerThread; i++) {
+                        try {
+                            Sender.send(ip,port,packageSize);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
         }
+
+
     }
 }
