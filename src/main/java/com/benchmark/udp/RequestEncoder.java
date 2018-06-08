@@ -21,18 +21,18 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @ChannelHandler.Sharable
 public class RequestEncoder extends MessageToMessageEncoder<UdpRequest> {
-    private final InetSocketAddress remoteAddress;
     private final AtomicLong count=new AtomicLong();
-    public RequestEncoder(InetSocketAddress recieveAddress){
-        this.remoteAddress=recieveAddress;
+    public RequestEncoder(){
     }
 
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, UdpRequest udpRequest, List<Object> list) throws Exception {
+        udpRequest.setId(count.addAndGet(1));
+        System.out.println(udpRequest.getId());
         byte[] data=KryoSerializer.encode(udpRequest);
-        System.out.println(count.addAndGet(1));
-        ByteBuf byteBuf=channelHandlerContext.alloc().buffer(data.length);
+
+        ByteBuf byteBuf=channelHandlerContext.alloc().heapBuffer();
         byteBuf.writeBytes(data);
-        list.add(new DatagramPacket(byteBuf,remoteAddress));
+        list.add(new DatagramPacket(byteBuf,new InetSocketAddress("127.0.0.1",8080)));
     }
 }

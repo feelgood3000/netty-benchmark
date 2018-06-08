@@ -20,7 +20,7 @@ public class RevieveHandler extends SimpleChannelInboundHandler<UdpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, UdpRequest udpRequest) throws Exception {
-        System.out.println(count.addAndGet(1));
+        System.out.println(count.addAndGet(1)+"，"+udpRequest);
 //        System.out.println(udpRequest);
     }
 }

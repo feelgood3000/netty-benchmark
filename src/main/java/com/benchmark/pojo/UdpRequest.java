@@ -7,6 +7,7 @@ import java.util.Arrays;
  * @date 2018/6/8 上午9:38
  */
 public class UdpRequest {
+    private long id;
     private long sendTime;
     private byte[] body;
 
@@ -20,7 +21,7 @@ public class UdpRequest {
 
     @Override
     public String toString() {
-        return "UdpRequest{" + "sendTime=" + sendTime + ", body=" + Arrays.toString(body) + '}';
+        return "UdpRequest{" + "id=" + id + ", sendTime=" + sendTime + ", body=" + Arrays.toString(body) + '}';
     }
 
     public long getSendTime() {
@@ -37,5 +38,13 @@ public class UdpRequest {
 
     public void setBody(byte[] body) {
         this.body = body;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 }

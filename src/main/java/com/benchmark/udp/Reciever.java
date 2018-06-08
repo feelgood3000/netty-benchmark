@@ -22,6 +22,7 @@ public class Reciever {
         bootstrap.group(group)
                 .channel(NioDatagramChannel.class)
                 .option(ChannelOption.SO_BROADCAST,true)
+                .option(ChannelOption.SO_RCVBUF,1024 * 1024 * 1024)
                 .handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel channel) throws Exception {
