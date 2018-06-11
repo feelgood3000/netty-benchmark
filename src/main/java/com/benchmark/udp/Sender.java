@@ -101,6 +101,6 @@ public class Sender {
             });
         }
         long end=System.currentTimeMillis();
-        logger.info("花费{}ms,threadNum:{},packagePerThread:{},packageSize:{}",(end-startTime),packagePerThread,packageSize);
+        logger.info("花费{}ms,threadNum:{},packagePerThread:{},packageSize:{}",(end-startTime),threadNum,packagePerThread,packageSize);
     }
 }
