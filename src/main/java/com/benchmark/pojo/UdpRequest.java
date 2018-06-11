@@ -16,6 +16,12 @@ public class UdpRequest {
         this.body = body;
     }
 
+    public UdpRequest(long id, long sendTime, byte[] body) {
+        this.id = id;
+        this.sendTime = sendTime;
+        this.body = body;
+    }
+
     public UdpRequest() {
     }
 

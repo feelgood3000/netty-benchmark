@@ -15,6 +15,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author mofei@yixia.com
@@ -24,6 +25,7 @@ public class Sender {
     private static  EventLoopGroup group;
     private static  Bootstrap bootstrap;
     private static Channel channel;
+    private static AtomicLong count=new AtomicLong(0);
 
     static CountDownLatch countDownLatch;
 
@@ -33,7 +35,7 @@ public class Sender {
 
     public static void send(String remoteIp,int port,int packageSize) throws InterruptedException {
         byte[] data=new byte[packageSize];
-        byte[] dataObj=KryoSerializer.encode(new UdpRequest(System.currentTimeMillis(),data));
+        byte[] dataObj=KryoSerializer.encode(new UdpRequest(count.addAndGet(1),System.currentTimeMillis(),data));
         ByteBuf buffer=channel.alloc().heapBuffer();
         buffer.writeBytes(dataObj);
         io.netty.channel.socket.DatagramPacket datagramPacket = new io.netty.channel.socket.DatagramPacket
@@ -68,15 +70,13 @@ public class Sender {
                 .handler(new RevieveHandler());
         try {
             channel=bootstrap.bind(0).sync().channel();
-
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }finally {
-//            Sender.stop();
+            return;
         }
-
         executor=Executors.newFixedThreadPool(threadNum);
         for (int i = 0; i < threadNum; i++) {
+            countDownLatch.countDown();
             executor.execute(new Runnable() {
                 public void run() {
                     try {
@@ -94,7 +94,5 @@ public class Sender {
                 }
             });
         }
-
-
     }
 }
