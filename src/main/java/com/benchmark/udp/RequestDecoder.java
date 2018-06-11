@@ -19,11 +19,13 @@ public class RequestDecoder extends MessageToMessageDecoder<DatagramPacket> {
     @Override
     protected void decode(
             ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket, List<Object> list) throws Exception {
-        System.out.println(count.addAndGet(1));
-//        ByteBuf data=datagramPacket.content();
-//        byte[] dataByte=new byte[data.readableBytes()];
-//        data.readBytes(dataByte);
-//        UdpRequest udpRequest=KryoSerializer.deCode(dataByte,UdpRequest.class);
-//        list.add(udpRequest);
+        ByteBuf data=datagramPacket.content();
+        byte[] dataByte=new byte[data.readableBytes()];
+        data.readBytes(dataByte);
+        UdpRequest udpRequest=KryoSerializer.deCode(dataByte,UdpRequest.class);
+        if (udpRequest!=null){
+            udpRequest.setReceiveTime(System.currentTimeMillis());
+        }
+        list.add(udpRequest);
     }
 }

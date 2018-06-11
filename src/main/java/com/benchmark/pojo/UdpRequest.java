@@ -10,6 +10,7 @@ public class UdpRequest {
     private long id;
     private long sendTime;
     private byte[] body;
+    private long receiveTime;
 
     public UdpRequest(long sendTime, byte[] body) {
         this.sendTime = sendTime;
@@ -52,5 +53,13 @@ public class UdpRequest {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getReceiveTime() {
+        return receiveTime;
+    }
+
+    public void setReceiveTime(long receiveTime) {
+        this.receiveTime = receiveTime;
     }
 }

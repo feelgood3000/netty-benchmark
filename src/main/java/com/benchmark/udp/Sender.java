@@ -10,6 +10,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
@@ -22,6 +24,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * @date 2018/6/8 上午9:42
  */
 public class Sender {
+    private static final Logger logger=LoggerFactory.getLogger(Sender.class);
+
+
     private static  EventLoopGroup group;
     private static  Bootstrap bootstrap;
     private static Channel channel;
@@ -74,6 +79,7 @@ public class Sender {
             e.printStackTrace();
             return;
         }
+        long startTime=System.currentTimeMillis();
         executor=Executors.newFixedThreadPool(threadNum);
         for (int i = 0; i < threadNum; i++) {
             countDownLatch.countDown();
@@ -94,5 +100,7 @@ public class Sender {
                 }
             });
         }
+        long end=System.currentTimeMillis();
+        logger.info("花费{}ms,threadNum:{},packagePerThread:{},packageSize:{}",(end-startTime),packagePerThread,packageSize);
     }
 }
