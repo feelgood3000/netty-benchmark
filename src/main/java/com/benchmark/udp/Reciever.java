@@ -41,12 +41,12 @@ public class Reciever {
         group.shutdownGracefully();
     }
 
-    public static void main(String[] args){
-        if (args.length!=1){
-            System.out.println("args error usage:port");
+    public static void start(String[] args){
+        if (args.length!=2){
+            System.out.println("args error usage:reciver port");
             System.exit(1);
         }
-        InetSocketAddress address=new InetSocketAddress(Integer.parseInt(args[0]));
+        InetSocketAddress address=new InetSocketAddress(Integer.parseInt(args[1]));
         Reciever reciever=new Reciever(address);
 
         try {

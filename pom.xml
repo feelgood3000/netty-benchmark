@@ -67,7 +67,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>com.benchmark.udp.Sender</mainClass>
+                            <mainClass>com.benchmark.udp.Main</mainClass>
                         </manifest>
                     </archive>
                     <encoding>UTF-8</encoding>
