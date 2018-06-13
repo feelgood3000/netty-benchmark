@@ -23,6 +23,6 @@ public class RevieveHandler extends SimpleChannelInboundHandler<UdpRequest> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, UdpRequest udpRequest) throws Exception {
-        logger.warn("{} {} udpRequest:{}",count.addAndGet(1),udpRequest.getReceiveTime()-udpRequest.getSendTime(),udpRequest);
+        logger.warn("{} {}",count.addAndGet(1),udpRequest.getReceiveTime()-udpRequest.getSendTime());
     }
 }
