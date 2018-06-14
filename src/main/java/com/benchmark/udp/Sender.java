@@ -2,6 +2,7 @@ package com.benchmark.udp;
 
 import com.benchmark.pojo.UdpRequest;
 import com.benchmark.util.KryoSerializer;
+import com.google.common.util.concurrent.RateLimiter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -31,6 +32,7 @@ public class Sender {
     private static  Bootstrap bootstrap;
     private static Channel channel;
     private static AtomicLong count=new AtomicLong(0);
+    private static RateLimiter limiter=RateLimiter.create(100000);
 
     static CountDownLatch countDownLatch;
 
@@ -92,6 +94,7 @@ public class Sender {
                     }
                     for (int i = 0; i < packagePerThread; i++) {
                         try {
+                            limiter.acquire();
                             Sender.send(ip,port,packageSize);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
