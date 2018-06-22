@@ -32,7 +32,7 @@ public class Sender {
     private static  Bootstrap bootstrap;
     private static Channel channel;
     private static AtomicLong count=new AtomicLong(0);
-    private static RateLimiter limiter=RateLimiter.create(100000);
+    private static RateLimiter limiter=null;
 
     static CountDownLatch countDownLatch;
 
@@ -57,9 +57,9 @@ public class Sender {
     private static Executor executor=null;
 
 
-    public static void start(String[] args){
-        if (args.length!=6){
-            System.out.println("args error usage:sender ip port threadNum packagePerThread packageSize");
+    public static void start(String[] args) throws InterruptedException {
+        if (args.length!=7){
+            System.out.println("args error usage:sender ip port threadNum packagePerThread packageSize rateLimiter");
             System.exit(1);
         }
         final String ip=args[1];
@@ -67,7 +67,9 @@ public class Sender {
         final int threadNum=NumberUtils.toInt(args[3]);
         final int packagePerThread=NumberUtils.toInt(args[4]);
         final int packageSize=NumberUtils.toInt(args[5]);
-
+        final long rateLimiter=NumberUtils.toLong(args[6]);
+        limiter=RateLimiter.create(rateLimiter);
+        Thread.sleep(3000);
         countDownLatch=new CountDownLatch(threadNum);
 
         group=new NioEventLoopGroup();
@@ -81,7 +83,7 @@ public class Sender {
             e.printStackTrace();
             return;
         }
-        long startTime=System.currentTimeMillis();
+        final long startTime=System.currentTimeMillis();
         executor=Executors.newFixedThreadPool(threadNum);
         for (int i = 0; i < threadNum; i++) {
             countDownLatch.countDown();
@@ -100,11 +102,12 @@ public class Sender {
                             e.printStackTrace();
                         }
                     }
+                    long end=System.currentTimeMillis();
+                    logger.info("花费{}ms,threadNum:{},packagePerThread:{},packageSize:{}",(end-startTime),threadNum,packagePerThread,packageSize);
                 }
             });
         }
-        long end=System.currentTimeMillis();
-        logger.info("花费{}ms,threadNum:{},packagePerThread:{},packageSize:{}",(end-startTime),threadNum,packagePerThread,packageSize);
+
         
     }
 }

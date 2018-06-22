@@ -6,7 +6,7 @@
 
     <groupId>netty</groupId>
     <artifactId>benchmark</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
